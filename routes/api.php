@@ -21,5 +21,9 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('users', [UserController::class, 'index']);
+    Route::get('/user', [UserController::class, 'index']);
+
+    Route::middleware(['role:admin'])->group(function (){
+        
+    });
 });

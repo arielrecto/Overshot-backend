@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,7 +15,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        return Auth::user();
+
+        $user = Auth::user();
+       return Response([
+        'user' => $user,
+        'role' => $user->getRoleNames()
+       ]);
     }
 
     /**
