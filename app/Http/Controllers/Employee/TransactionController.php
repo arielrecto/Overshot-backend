@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Employee;
 
-use App\Actions\Employee\StoreEmployeeAction;
-use App\Http\Requests\Admin\StoreEmployeeRequest;
-use GuzzleHttp\Psr7\Response;
+use App\Actions\Transaction\StoreTransactionAction;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Employee\StoreTransactionRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 
-class UserController extends Controller
+class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,12 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
-
-        $user = Auth::user();
-       return Response([
-        'user' => $user,
-        'role' => $user->getRoleNames()
-       ]);
+        //
     }
 
     /**
@@ -41,11 +36,11 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreEmployeeRequest $request, StoreEmployeeAction $storeEmployeeAction)
+    public function store(StoreTransactionRequest $request, StoreTransactionAction $storeTransactionAction)
     {
-        $storeEmployeeAction->handle($request);
+        $storeTransactionAction->handle($request);
 
-        return Response('Employee Account Added Successfully', 200);
+        return Response('Transaction Success', 200);
     }
 
     /**

@@ -2,10 +2,12 @@
 
 namespace App\Http\Services;
 
+
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
+use App\Actions\Role\AssignRoleUser;
+
 
 class AuthService
 {
@@ -17,13 +19,12 @@ class AuthService
             'password' => Hash::make($request->password)
         ]);
 
-        $role = Role::findByName('user');
+        $userAssignRole = new AssignRoleUser();
+        $role = $userAssignRole->handle($user, 'client', 'web');
 
-        $token = $user->createToken($user->name)->plainTextToken;
         return response([
             'user' => $user,
-            'token' => $token,
-            'role' => $user->assignRole($role)
+            'role' => $role
         ]);
     }
     public function logout($request)
@@ -41,7 +42,7 @@ class AuthService
     public function login($request)
     {
         if (!Auth::attempt($request->only(['email', 'password']))) {
-            return abort(401);
+            return abort(401, 'Incorrect Credentials');
         }
         $user = User::where('email', $request->email)->first();
 
@@ -51,10 +52,5 @@ class AuthService
             'token' => $user->createToken($user->name)->plainTextToken,
             'role' => $user->getRoleNames()
         ], 200);
-    }
-    private function userRole($role)
-    {
-
-        return Role::create(['name' => $role]);
     }
 }

@@ -1,14 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Client;
 
-use App\Actions\Employee\StoreEmployeeAction;
-use App\Http\Requests\Admin\StoreEmployeeRequest;
-use GuzzleHttp\Psr7\Response;
+use App\Actions\Profile\ShowProfileAction;
+use App\Actions\Profile\StoreProfileAction;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Client\StoreProfileRequest;
+use App\Models\Product;
+use App\Models\Profile;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
-class UserController extends Controller
+class ProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,12 +21,7 @@ class UserController extends Controller
      */
     public function index()
     {
-
-        $user = Auth::user();
-       return Response([
-        'user' => $user,
-        'role' => $user->getRoleNames()
-       ]);
+        //
     }
 
     /**
@@ -41,11 +40,11 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreEmployeeRequest $request, StoreEmployeeAction $storeEmployeeAction)
+    public function store(StoreProfileRequest $request, StoreProfileAction $storeProfileAction)
     {
-        $storeEmployeeAction->handle($request);
+        $storeProfileAction->handle($request);
 
-        return Response('Employee Account Added Successfully', 200);
+        return response('Profile Added Successfully', 200);
     }
 
     /**
@@ -54,9 +53,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(ShowProfileAction $showProfileAction ,$id)
     {
-        //
+        $showProfileAction->handle($id);
+
+        return $showProfileAction->toArray();
     }
 
     /**
