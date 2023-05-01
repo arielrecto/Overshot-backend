@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Product\StoreProductAction;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Services\ProductService;
 use App\Models\Product;
@@ -36,11 +37,19 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreProductRequest $request)
+    public function store(Request $request, StoreProductAction $storeProductAction)
     {
-        $productService = new ProductService($request);
+       $product =  $storeProductAction->handle($request);
 
-        return $productService->storeProduct();
+        if(!$product) {
+
+            return abort(401);
+
+        }
+        
+        return response([
+            'product' => $product
+        ], 200);
     }
 
     /**

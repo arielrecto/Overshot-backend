@@ -17,7 +17,7 @@ class SupplyFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->randomElement(['supplyOne', 'supplyTwo', 'supplyThree']),
+            'name' => fake()->name(),
             'amount' => fake()->numberBetween($min = 1, $max = 20),
             'quantity' => fake()->numberBetween($min = 1, $min = 50),
             'unit' => fake()->randomElement(['kg', 'gal', 'ml'])

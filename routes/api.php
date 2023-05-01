@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
         Route::resource('products', ProductController::class)->only([
-            'store', 'update', 'destroy'
+            'store', 'update', 'destroy','index'
         ]);
         Route::resource('supplies', SupplyController::class)->only([
             'index', 'store', 'update', 'destroy'

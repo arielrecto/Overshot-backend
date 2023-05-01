@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Supply\DeleteSupplyAction;
 use App\Actions\Supply\StoreSupplyAction;
 use App\Http\Requests\StoreSupplyRequest;
+use App\Models\Supply;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -16,7 +18,7 @@ class SupplyController extends Controller
      */
     public function index()
     {
-        //
+        return Supply::paginate(10);
     }
 
     /**
@@ -35,11 +37,11 @@ class SupplyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreSupplyRequest $request, StoreSupplyAction $action)
+    public function store(Request $request, StoreSupplyAction $action)
     {
-        $supply = $action->handle($request);
+        $action->handle($request);
 
-        return Response($supply, 200);
+        return response('item-added Successfully', 200);
     }
 
     /**
@@ -82,8 +84,8 @@ class SupplyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, DeleteSupplyAction $deleteSupplyAction)
     {
-        //
+        return $deleteSupplyAction->handle($id);
     }
 }

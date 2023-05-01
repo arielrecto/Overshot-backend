@@ -19,9 +19,9 @@ class ProductService
     public function __construct(Request $request)
     {
         $this->image = $request->hasFile('image') ? $request->file('image') : null;
-        $this->name = $request->name;
-        $this->description = $request->description;
-        $this->price = $request->price;
+        $this->name = $request->data->name;
+        $this->description = $request->data->description;
+        $this->price = $request->data->price;
     }
     private function image(Product $product) : void
     {
