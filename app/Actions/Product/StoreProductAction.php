@@ -4,8 +4,10 @@
 namespace App\Actions\Product;
 
 use App\Actions\ImageUploader;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\Size;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -21,6 +23,18 @@ class StoreProductAction
             'description' => $request->data['description']
         ]);
 
+        $category = Category::where('name', $request->data['category'])->first();
+
+        $product->categories()->attach($category->id);
+
+
+        foreach($request->data['sizes'] as $_size){
+
+            $size = Size::where('name', $_size['name'])->first();
+
+            $product->sizes()->attach($size->id, ['price' => $_size['price']]);
+
+        }
         $image = $request->image;
 
         $image = $request->image;  // your base64 encoded
@@ -32,7 +46,7 @@ class StoreProductAction
         $imageDecoded = base64_decode($image);
 
         ProductImage::create([
-            'name' => $imageName, 
+            'name' => $imageName,
             'image_url' => asset('storage/product/image/' . $filename),
             'product_id' => $product->id
         ]);

@@ -59,6 +59,10 @@ Route::middleware('auth:sanctum')->group(function () {
             'index', 'update', 'destroy'
         ]);
 
+        Route::prefix('category')->group(function(){
+            Route::post('/sizes', [CategoryController::class, 'sizes']);
+        });
+
         Route::resource('category', CategoryController::class)->only([
             'index', 'store', 'update', 'destroy'
         ]);

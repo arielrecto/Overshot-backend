@@ -29,7 +29,7 @@ class Product extends Model
     }
     public function sizes()
     {
-        return $this->belongsToMany(Size::class);
+        return $this->belongsToMany(Size::class)->withPivot('price');
     }
     public function addons(){
         return $this->belongsToMany(Addon::class);

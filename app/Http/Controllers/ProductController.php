@@ -21,7 +21,7 @@ class ProductController extends Controller
     public function index()
     {
 
-         return Product::with('image')->get();
+        return Product::with('image', 'categories', 'sizes')->get();
     }
 
     /**
@@ -42,12 +42,11 @@ class ProductController extends Controller
      */
     public function store(Request $request, StoreProductAction $storeProductAction)
     {
-       $product =  $storeProductAction->handle($request);
+        $product =  $storeProductAction->handle($request);
 
-        if(!$product) {
+        if (!$product) {
 
             return abort(401);
-
         }
 
         return response([
@@ -100,21 +99,15 @@ class ProductController extends Controller
         //
     }
 
-    public function otherInfo() {
+    public function otherInfo()
+    {
 
 
-        $sizes = Size::get();
-
-        $category = Category::get();
-
-        $level = Level::get();
-
+        $category = Category::with('sizes')->get();
 
 
         return response([
-            'size' => $sizes,
             'category' => $category,
-            'level' => $level
         ]);
     }
 }

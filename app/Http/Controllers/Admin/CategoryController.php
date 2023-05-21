@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Category\StoreCategoryAction;
+use App\Actions\Category\StoreSizesCategoryAction;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ class CategoryController extends Controller
         $storeCategoryAction->handle($request);
 
 
-        $categories = Category::get();
+        $categories = Category::with('sizes')->get();
 
 
         return response(['categories' => $categories], 200);
@@ -89,5 +90,18 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function sizes(Request $request, StoreSizesCategoryAction $storeSizesCategoryAction){
+
+        $storeSizesCategoryAction->handle($request);
+
+
+
+        $categories = Category::with('sizes')->get();
+
+        return response([
+            'categories' => $categories
+        ], 200);
     }
 }
