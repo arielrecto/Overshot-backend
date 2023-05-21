@@ -1,8 +1,7 @@
 <?php
 
-use App\Models\Order;
-use App\Models\Supply;
-use App\Models\User;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,13 +15,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
-            $table->string('ref');
-            $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Order::class);
-            $table->string('type');
-            $table->timestamps();
+        Schema::create('category_products', function (Blueprint $table) {
+           $table->foreignIdFor(Category::class);
+           $table->foreignIdFor(Product::class);
         });
     }
 
@@ -33,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('category_products');
     }
 };

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Employee\StoreEmployeeAction;
 use App\Http\Requests\Admin\StoreEmployeeRequest;
+use App\Models\User;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,11 +19,11 @@ class UserController extends Controller
     public function index()
     {
 
-        $user = Auth::user();
-       return Response([
-        'user' => $user,
-        'role' => $user->getRoleNames()
-       ]);
+        $employee = User::role('employee')->get();
+
+        return response([
+            'employees' => $employee
+        ], 200);
     }
 
     /**
@@ -45,7 +46,12 @@ class UserController extends Controller
     {
         $storeEmployeeAction->handle($request);
 
-        return Response('Employee Account Added Successfully', 200);
+        $employees = User::role('employee')->get();
+
+        return Response([
+            'employees' => $employees,
+            'message' => 'Employee Account Added Successfully'
+        ] , 200);
     }
 
     /**

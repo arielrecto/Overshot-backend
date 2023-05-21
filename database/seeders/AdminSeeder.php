@@ -3,11 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Database\Factories\AdminFactory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Database\Factories\AdminFactory;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class AdminSeeder extends Seeder
 {
@@ -21,13 +22,30 @@ class AdminSeeder extends Seeder
         $user = User::create([
             'name' => 'ariel recto',
             'email' => 'arielrecto@gmail.com',
+            'slug_name' => Str::slug('ariel recto'),
             'password' => Hash::make('ariel123')
         ]);
 
         $role = Role::create(['name' => 'admin']);
-        Role::create(['name' => 'client']);
-        Role::create(['name' => 'employee']);
+        $clientRole = Role::create(['name' => 'client']);
+        $employeeRole =  Role::create(['name' => 'employee']);
 
+        $employee = User::create([
+            'name' => 'ariel recto',
+            'email' => 'arielrecto2@gmail.com',
+            'slug_name' => Str::slug('ariel recto'),
+            'password' => Hash::make('ariel123')
+        ]);
+
+        $client = User::create([
+            'name' => 'ariel recto',
+            'email' => 'arielrecto1@gmail.com',
+            'slug_name' => Str::slug('ariel recto'),
+            'password' => Hash::make('ariel123')
+        ]);
+
+        $employee->assignRole($employeeRole);
+        $client->assignRole($clientRole);
         $user->assignRole($role);
     }
 }

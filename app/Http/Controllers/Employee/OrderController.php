@@ -2,29 +2,26 @@
 
 namespace App\Http\Controllers\Employee;
 
-use App\Actions\Employee\GetItemsDataAction;
-use App\Actions\Transaction\StoreOrderAction;
-use App\Actions\Transaction\StorePosAction;
-use App\Actions\Transaction\StoreTransactionAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Employee\StoreTransactionRequest;
-use App\Models\Product;
+use App\Models\Order;
 use App\Models\Supply;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
-class TransactionController extends Controller
+class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(GetItemsDataAction $getItemsDataAction)
+    public function index()
     {
-        $items = $getItemsDataAction->handle();
-
-        return response($items, 200);
+        $orders = Order::where('status', 'pending')->with('user', 'products', 'payment')->get();
+        $supplies = Supply::get();
+        return response([
+            'orders' => $orders,
+            'supplies' => $supplies
+        ]);
     }
 
     /**
@@ -45,6 +42,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
+        //
     }
 
     /**
@@ -55,7 +53,9 @@ class TransactionController extends Controller
      */
     public function show($id)
     {
-        //
+        $orders = Order::find($id)->with('users', 'products')->get();
+
+
     }
 
     /**
@@ -90,33 +90,5 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function order(Request $request, StoreOrderAction $storeOrderAction)
-    {
-        $response = $storeOrderAction->store($request);
-
-        if(!$response) {
-            abort(500, 'server error');
-        }
-
-        return response($response, 200);
-    }
-    public function pointOfSale(Request $request, StorePosAction $storePosAction)
-    {
-
-        $response = $storePosAction->store($request);
-
-        if (!$response) {
-            abort(500, 'sever error');
-        }
-
-        $products = Product::with('image')->get();
-        $supplies = Supply::get();
-
-        return response([
-            'products' => $products,
-            'supplies' => $supplies
-        ], 200);
     }
 }

@@ -18,7 +18,11 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $orders = Auth::user()->orders()->get();
+
+        return response([
+            'orders' => $orders
+        ]);
     }
 
     /**
@@ -39,7 +43,7 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request, StoreOrderAction $storeOrderAction)
     {
-    
+
         $order = $storeOrderAction->handle($request);
 
         return Response($order, 200);

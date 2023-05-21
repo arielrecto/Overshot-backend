@@ -18,6 +18,7 @@ return new class extends Migration
         Schema::create('supply_transaction', function (Blueprint $table) {
            $table->foreignIdFor(Transaction::class);
            $table->foreignIdFor(Supply::class);
+           $table->string('quantity');
         });
     }
 

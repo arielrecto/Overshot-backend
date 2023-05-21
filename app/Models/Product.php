@@ -15,10 +15,23 @@ class Product extends Model
         'price',
     ];
 
-    public function orders(){
+    public function orders()
+    {
         return $this->belongsToMany(Order::class);
     }
-    public function image(){
+    public function image()
+    {
         return $this->hasOne(ProductImage::class);
-    }   
+    }
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
+    public function sizes()
+    {
+        return $this->belongsToMany(Size::class);
+    }
+    public function addons(){
+        return $this->belongsToMany(Addon::class);
+    }
 }

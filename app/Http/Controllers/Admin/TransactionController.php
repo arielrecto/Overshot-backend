@@ -1,17 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Employee;
+namespace App\Http\Controllers\Admin;
 
-use App\Actions\Employee\GetItemsDataAction;
-use App\Actions\Transaction\StoreOrderAction;
-use App\Actions\Transaction\StorePosAction;
-use App\Actions\Transaction\StoreTransactionAction;
+use App\Actions\Transaction\GetTransactionDataAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Employee\StoreTransactionRequest;
-use App\Models\Product;
-use App\Models\Supply;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class TransactionController extends Controller
 {
@@ -20,11 +14,15 @@ class TransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(GetItemsDataAction $getItemsDataAction)
+    public function index(Transaction $transaction, GetTransactionDataAction $getTransactionDataAction)
     {
-        $items = $getItemsDataAction->handle();
+        $onlineTransaction = $this->getTransactionDataByType($transaction, 'online');
+        $walkInTransaction = $this->getTransactionDataByType($transaction, 'walk_in');
 
-        return response($items, 200);
+        $data = $getTransactionDataAction->handle($onlineTransaction, $walkInTransaction);
+
+        return response($data, 200);
+
     }
 
     /**
@@ -45,6 +43,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
+        //
     }
 
     /**
@@ -91,32 +90,10 @@ class TransactionController extends Controller
     {
         //
     }
+    private function getTransactionDataByType (Transaction $transaction, $type){
 
-    public function order(Request $request, StoreOrderAction $storeOrderAction)
-    {
-        $response = $storeOrderAction->store($request);
+       $_transaction =  $transaction->where('type', $type)->with('user', 'order', 'supplies')->get();
 
-        if(!$response) {
-            abort(500, 'server error');
-        }
-
-        return response($response, 200);
-    }
-    public function pointOfSale(Request $request, StorePosAction $storePosAction)
-    {
-
-        $response = $storePosAction->store($request);
-
-        if (!$response) {
-            abort(500, 'sever error');
-        }
-
-        $products = Product::with('image')->get();
-        $supplies = Supply::get();
-
-        return response([
-            'products' => $products,
-            'supplies' => $supplies
-        ], 200);
+       return $_transaction;
     }
 }

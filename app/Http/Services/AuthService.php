@@ -4,9 +4,10 @@ namespace App\Http\Services;
 
 
 use App\Models\User;
+use Illuminate\Support\Str;
+use App\Actions\Role\AssignRoleUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Actions\Role\AssignRoleUser;
 
 
 class AuthService
@@ -15,6 +16,7 @@ class AuthService
     {
         $user = User::create([
             'name' => $request->name,
+            'slug_name' => Str::slug($request->name),
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);

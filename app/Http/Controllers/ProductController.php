@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Actions\Product\StoreProductAction;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Services\ProductService;
+use App\Models\Category;
+use App\Models\Level;
 use App\Models\Product;
+use App\Models\Size;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -46,7 +49,7 @@ class ProductController extends Controller
             return abort(401);
 
         }
-        
+
         return response([
             'product' => $product
         ], 200);
@@ -95,5 +98,23 @@ class ProductController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function otherInfo() {
+
+
+        $sizes = Size::get();
+
+        $category = Category::get();
+
+        $level = Level::get();
+
+
+
+        return response([
+            'size' => $sizes,
+            'category' => $category,
+            'level' => $level
+        ]);
     }
 }
