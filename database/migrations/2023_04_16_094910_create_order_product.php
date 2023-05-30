@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(Order::class);
             $table->foreignIdFor(Product::class);
             $table->string('quantity');
+            $table->string('size');
         });
     }
 

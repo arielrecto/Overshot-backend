@@ -18,7 +18,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Auth::user()->orders()->get();
+        $orders = Auth::user()->orders()->with('payment')->get();
 
         return response([
             'orders' => $orders
@@ -41,7 +41,7 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreOrderRequest $request, StoreOrderAction $storeOrderAction)
+    public function store(Request $request, StoreOrderAction $storeOrderAction)
     {
 
         $order = $storeOrderAction->handle($request);

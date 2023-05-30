@@ -11,7 +11,8 @@ class Payment extends Model
 
     protected $fillable = [
         'amount',
-        'order_id'
+        'order_id',
+        'type'
     ];
 
 
@@ -19,5 +20,9 @@ class Payment extends Model
 
         return $this->belongsTo(Order::class);
 
+    }
+
+    public function image (){
+        return $this->hasOne(PaymentImage::class);
     }
 }

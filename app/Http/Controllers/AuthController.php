@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $request, AuthService $auth) {
+    public function register(Request $request, AuthService $auth) {
        return $auth->register($request);
     }
     public function logout(Request $request, AuthService $auth){

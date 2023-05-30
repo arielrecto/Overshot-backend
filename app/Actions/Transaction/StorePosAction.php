@@ -30,12 +30,14 @@ class StorePosAction implements TransactionInterface{
         ]);
 
         $order->payment()->create([
-            'amount' => $request->payment
+            'amount' => $request->payment,
+            'type' => 'cash'
         ]);
 
         foreach ($request->products as $_product) {
             $product = Product::where('id', $_product['id'])->first();
-            $order->products()->attach($product->id, ['quantity' => $_product['quantity']]);
+            $size = $_product['size'] === 'regular' ? 'regular' : $_product['size']['name'];
+            $order->products()->attach($product->id, ['quantity' => $_product['quantity'], 'size' => $size]);
         }
 
         $transaction = Transaction::create([

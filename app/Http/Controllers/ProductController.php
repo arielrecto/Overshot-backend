@@ -21,7 +21,14 @@ class ProductController extends Controller
     public function index()
     {
 
-        return Product::with('image', 'categories', 'sizes')->get();
+        $products = Product::with('image', 'categories', 'sizes')->get();
+
+        $categories = Category::get();
+
+        return response([
+            'products' => $products,
+            'categories' => $categories
+        ], 200);
     }
 
     /**

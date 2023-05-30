@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Supply;
 use Illuminate\Http\Request;
 
@@ -90,5 +91,14 @@ class OrderController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function paymentOtherInfo($id){
+
+
+        $payment = Payment::with('image')->where('id', $id)->first();
+
+
+        return response(['payment' => $payment]);
+
     }
 }

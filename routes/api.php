@@ -4,9 +4,11 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Client\OrderController;
+use App\Http\Controllers\Client\OverviewController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Employee\OrderController as EmployeeOrderController;
 use App\Http\Controllers\Employee\TransactionController;
+use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupplyController;
@@ -35,6 +37,7 @@ use PhpParser\Node\Expr\FuncCall;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/landing_page', [LandingPageController::class, 'products']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -75,6 +78,15 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
     Route::middleware(['role:employee'])->prefix('employee')->group(function () {
+
+        Route::prefix('order')->group(function () {
+            Route::get('/payment/{id}/info', [EmployeeOrderController::class, 'paymentOtherInfo']);
+        });
+
+        Route::prefix('overview')->group(function () {
+            Route::get('/',[OverviewController::class, 'index']);
+        });
+
         Route::resource('transaction', TransactionController::class)->only([
             'index', 'update', 'destroy'
         ]);
