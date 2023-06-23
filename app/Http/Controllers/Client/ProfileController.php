@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Actions\Profile\ShowProfileAction;
-use App\Actions\Profile\StoreProfileAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Client\StoreProfileRequest;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Actions\Profile\ShowProfileAction;
+use App\Actions\Profile\StoreProfileAction;
+use App\Http\Requests\Client\StoreProfileRequest;
 
 class ProfileController extends Controller
 {
@@ -53,11 +54,15 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(ShowProfileAction $showProfileAction ,$id)
+    public function show($id)
     {
-        $showProfileAction->handle($id);
 
-        return $showProfileAction->toArray();
+        $user = User::find($id);
+
+        $profile = $user->profile;
+        return response([
+           'user' => $user
+        ], 200);
     }
 
     /**

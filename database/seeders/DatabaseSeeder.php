@@ -22,6 +22,11 @@ class DatabaseSeeder extends Seeder
         // $user = User::factory(10)->create();
 
 
+        $this->call([
+            AdminSeeder::class
+        ]); 
+
+
         $product = Product::factory(3)->create();
         // \App\Models\User::factory(10)->create();
 

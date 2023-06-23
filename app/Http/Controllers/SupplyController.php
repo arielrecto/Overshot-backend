@@ -18,7 +18,7 @@ class SupplyController extends Controller
      */
     public function index()
     {
-        return Supply::paginate(10);
+        return Supply::get();
     }
 
     /**

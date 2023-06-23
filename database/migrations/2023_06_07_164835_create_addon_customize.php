@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Level;
-use App\Models\Product;
+use App\Models\Addon;
+use App\Models\Customize;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +15,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('level_products', function (Blueprint $table) {
-           $table->foreignIdFor(Product::class);
-           $table->foreignIdFor(Level::class);
-           $table->string('percent');
+        Schema::create('addon_customize', function (Blueprint $table) {
+           $table->foreignIdFor(Addon::class);
+           $table->foreignIdFor(Customize::class);
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('level_products');
+        Schema::dropIfExists('addon_customize');
     }
 };

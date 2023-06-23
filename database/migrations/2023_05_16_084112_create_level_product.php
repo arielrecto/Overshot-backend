@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Level;
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,14 +15,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('supplies', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('amount');
-            $table->string('unit');
-            $table->string('quantity');
-            $table->string('category');
-            $table->timestamps();
+        Schema::create('level_product', function (Blueprint $table) {
+           $table->foreignIdFor(Product::class);
+           $table->foreignIdFor(Level::class);
+           $table->string('percent');
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('supplies');
+        Schema::dropIfExists('level_products');
     }
 };

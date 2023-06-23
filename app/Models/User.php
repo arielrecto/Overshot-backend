@@ -45,12 +45,15 @@ class User extends Authenticatable
     ];
 
     public function profile(){
-        return $this->hasOne(Profile::class);
+        return $this->hasOne(Profile::class)->with('avatar');
     }
     public function orders(){
         return $this->hasMany(Order::class);
     }
     public function transactions(){
         return $this->hasMany(Transaction::class)->with('orders');
+    }
+    public function customizes (){
+        return $this->hasMany(Customize::class);
     }
 }

@@ -12,7 +12,8 @@ class Supply extends Model
         'name',
         'quantity',
         'amount',
-        'unit'
+        'unit',
+        'category'
     ];
 
     public function transactions()

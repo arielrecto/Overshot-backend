@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Level;
 use App\Models\Product;
 use App\Models\Size;
+use App\Models\Supply;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -21,13 +22,15 @@ class ProductController extends Controller
     public function index()
     {
 
-        $products = Product::with('image', 'categories', 'sizes')->get();
+        $products = Product::with('image', 'categories', 'sizes', 'levels')->get();
+        $supplies = Supply::where('category', 'Add On')->get();
 
         $categories = Category::get();
 
         return response([
             'products' => $products,
-            'categories' => $categories
+            'categories' => $categories,
+            'supplies' => $supplies
         ], 200);
     }
 
@@ -110,7 +113,7 @@ class ProductController extends Controller
     {
 
 
-        $category = Category::with('sizes')->get();
+        $category = Category::with('sizes','levels')->get();
 
 
         return response([

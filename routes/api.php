@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Client\OrderController;
@@ -44,9 +45,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
 
+        Route::prefix('dashboard')->group(function(){
+            Route::get('overview', [DashboardController::class,'overview']);
+        });
+
         Route::prefix('products')->group(function () {
             Route::get('otherinfo', [ProductController::class, 'otherinfo']);
         });
+
 
         Route::resource('products', ProductController::class)->only([
             'store', 'update', 'destroy', 'index'
@@ -64,6 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::prefix('category')->group(function(){
             Route::post('/sizes', [CategoryController::class, 'sizes']);
+            Route::post('/levels', [CategoryController::class, 'levels']);
         });
 
         Route::resource('category', CategoryController::class)->only([

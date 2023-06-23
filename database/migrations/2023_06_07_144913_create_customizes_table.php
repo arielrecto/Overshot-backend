@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,13 +15,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('supplies', function (Blueprint $table) {
+        Schema::create('customizes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('amount');
-            $table->string('unit');
-            $table->string('quantity');
-            $table->string('category');
+            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Product::class);
+            $table->string('sugar_level');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('supplies');
+        Schema::dropIfExists('customizes');
     }
 };

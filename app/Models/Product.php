@@ -34,4 +34,10 @@ class Product extends Model
     public function addons(){
         return $this->belongsToMany(Addon::class);
     }
+    public function levels () {
+        return $this->belongsToMany(Level::class)->withPivot('percent');
+    }
+    public function customizes(){
+        return $this->hasMany(Customize::class);
+    }
 }

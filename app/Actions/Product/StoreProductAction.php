@@ -5,6 +5,7 @@ namespace App\Actions\Product;
 
 use App\Actions\ImageUploader;
 use App\Models\Category;
+use App\Models\Level;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Size;
@@ -34,6 +35,10 @@ class StoreProductAction
 
             $product->sizes()->attach($size->id, ['price' => $_size['price']]);
 
+        }
+        foreach($request->data['levels'] as $_level){
+            $level = Level::where('name', $_level['name'])->first();
+            $product->levels()->attach($level->id, ['percent' => $_level['percent']]);
         }
         $image = $request->image;
 

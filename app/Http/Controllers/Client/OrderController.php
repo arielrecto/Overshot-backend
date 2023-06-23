@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Actions\Order\StoreOrderAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\StoreOrderRequest;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,10 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Auth::user()->orders()->with('payment')->get();
+
+        $user = Auth::user();
+        $orders = Order::with('payment', 'products', 'user')->where('user_id', $user->id)->get();
+
 
         return response([
             'orders' => $orders

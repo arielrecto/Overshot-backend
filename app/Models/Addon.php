@@ -15,4 +15,7 @@ class Addon extends Model
     public function products() {
         return $this->belongsToMany(Product::class);
     }
+    public function customizes() {
+        return $this->belongsToMany(Customize::class);
+    }
 }

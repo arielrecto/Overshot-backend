@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
@@ -42,6 +43,13 @@ class AdminSeeder extends Seeder
             'email' => 'arielrecto1@gmail.com',
             'slug_name' => Str::slug('ariel recto'),
             'password' => Hash::make('ariel123')
+        ]);
+
+        $milktea = Category::create([
+            'name' => 'milk tea',
+        ]);
+        $drink = Category::create([
+            'name' => 'drink',
         ]);
 
         $employee->assignRole($employeeRole);

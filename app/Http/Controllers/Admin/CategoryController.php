@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Category\StoreCategoryAction;
+use App\Actions\Category\StoreLevelsAction;
 use App\Actions\Category\StoreSizesCategoryAction;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
@@ -41,7 +42,7 @@ class CategoryController extends Controller
         $storeCategoryAction->handle($request);
 
 
-        $categories = Category::with('sizes')->get();
+        $categories = Category::with('sizes', 'levels')->get();
 
 
         return response(['categories' => $categories], 200);
@@ -98,10 +99,20 @@ class CategoryController extends Controller
 
 
 
-        $categories = Category::with('sizes')->get();
+        $categories = Category::with('sizes', 'levels')->get();
 
         return response([
             'categories' => $categories
         ], 200);
+    }
+    public function levels(Request $request, StoreLevelsAction $storeLevelsAction) {
+
+        $storeLevelsAction->handle($request);
+
+        $categories = Category::with('sizes', 'levels')->get();
+
+        return response([
+            'categories' => $categories
+        ]);
     }
 }

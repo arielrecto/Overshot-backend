@@ -30,9 +30,16 @@ class StoreOrderAction
             'status' => 'pending'
         ]);
 
-        $payment = $order->payment()->create([
+        foreach ($request->products as $_product) {
+            $size = $_product['size'] === 'regular' ? 'regular' : $_product['size']['name'];
+
+           $order->products()->attach($_product['id'], ['quantity' => $_product['pieces'], 'size' => $size]);
+        }
+
+        $payment = Payment::create([
             'amount' => $request->total,
-            'type' => $request->payment['type']
+            'type' => $request->payment['type'],
+            'order_id' => $order->id
         ]);
 
 
@@ -58,11 +65,6 @@ class StoreOrderAction
         ]);
         Storage::disk('public')->put('payment/image/' . $filename, $imageDecoded);
 
-        foreach ($request->products as $_product) {
-            $product = Product::where('id', $_product['id'])->first();
-            $size = $_product['size'] === 'regular' ? $product->size : $_product['size']['name'];
-            $order->products()->attach($product->id, ['quantity' => $_product['pieces'], 'size' => $size]);
-        }
         $orders = $user->orders()->get();
         return [
             'message' => 'order success',
