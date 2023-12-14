@@ -17,7 +17,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::where('status', 'pending')->with('user', 'products', 'payment')->get();
+        $orders = Order::where('status', 'pending')->with('user', 'products', 'payment', 'location')->get();
         $supplies = Supply::get();
         return response([
             'orders' => $orders,
@@ -54,7 +54,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $orders = Order::find($id)->with('users', 'products')->get();
+        $orders = Order::find($id)->with('users', 'products', 'location')->get();
 
 
     }

@@ -3,6 +3,7 @@
 namespace App\Actions\Order;
 
 use App\Models\Category;
+use App\Models\Location;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
@@ -21,6 +22,10 @@ class StoreOrderAction
     {
 
         $user = Auth::user();
+
+        $addressData = $request->addressData ?? null;
+
+
         $order = Order::create([
             'order_num' => 'ORDR_' . Str::slug(now()),
             'quantity' => $request->quantity,
@@ -29,6 +34,22 @@ class StoreOrderAction
             'type' => 'online',
             'status' => 'pending'
         ]);
+
+
+        if($addressData !== null){
+            $location = Location::create([
+                'latitude' => $addressData['lat'],
+                'longitude' => $addressData['lng'],
+                'address' => $addressData['address'],
+                'user_id' => $user->id,
+            ]);
+
+            $order->update([
+                'location_id' => $location->id
+            ]);
+        }
+
+
 
         foreach ($request->products as $_product) {
             $size = $_product['size'] === 'regular' ? 'regular' : $_product['size']['name'];

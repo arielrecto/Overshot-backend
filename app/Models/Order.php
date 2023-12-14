@@ -15,7 +15,8 @@ class Order extends Model
         'total',
         'user_id',
         'type',
-        'status'
+        'status',
+        'location_id'
     ];
 
     public function user(){
@@ -29,5 +30,8 @@ class Order extends Model
     }
     public function payment () {
         return $this->hasOne(Payment::class);
+    }
+    public function location(){
+        return $this->belongsTo(Location::class);
     }
 }

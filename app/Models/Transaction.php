@@ -23,10 +23,13 @@ class Transaction extends Model
     }
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class)->with(['products.image', 'user.profile.avatar']);
     }
     public function supplies()
     {
         return $this->belongsToMany(Supply::class);
+    }
+    public function transaction(){
+        return $this->hasOne(Transaction::class);
     }
 }

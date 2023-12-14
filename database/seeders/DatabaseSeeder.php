@@ -24,10 +24,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             AdminSeeder::class
-        ]); 
+        ]);
 
 
-        $product = Product::factory(3)->create();
+       // $product = Product::factory(3)->create();
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([

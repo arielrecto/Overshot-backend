@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Illuminate\Http\Request;
+use GuzzleHttp\Psr7\Response;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
 use App\Actions\Employee\StoreEmployeeAction;
 use App\Http\Requests\Admin\StoreEmployeeRequest;
-use App\Models\User;
-use GuzzleHttp\Psr7\Response;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -19,10 +20,14 @@ class UserController extends Controller
     public function index()
     {
 
-        $employee = User::role('employee')->get();
+
+        $roles = Role::whereNotIn('name', ['admin', 'client'])->get();
+
+        $employee = User::role(['employee', 'rider'])->with('roles')->get();
 
         return response([
-            'employees' => $employee
+            'employees' => $employee,
+            'roles' => $roles
         ], 200);
     }
 

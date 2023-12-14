@@ -30,6 +30,7 @@ class AdminSeeder extends Seeder
         $role = Role::create(['name' => 'admin']);
         $clientRole = Role::create(['name' => 'client']);
         $employeeRole =  Role::create(['name' => 'employee']);
+        $riderRole =  Role::create(['name' => 'rider']);
 
         $employee = User::create([
             'name' => 'ariel recto',
@@ -51,6 +52,17 @@ class AdminSeeder extends Seeder
         $drink = Category::create([
             'name' => 'drink',
         ]);
+
+        // $rider = User::create([
+        //     'name' => 'ariel recto',
+        //     'email' => 'arielrectoRider@gmail.com',
+        //     'slug_name' => Str::slug('ariel recto'),
+        //     'password' => Hash::make('ariel123')
+        // ]);
+
+
+
+        // $rider->assignRole($riderRole);
 
         $employee->assignRole($employeeRole);
         $client->assignRole($clientRole);

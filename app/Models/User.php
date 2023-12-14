@@ -56,4 +56,10 @@ class User extends Authenticatable
     public function customizes (){
         return $this->hasMany(Customize::class);
     }
+    public function deliveries() {
+        return $this->hasMany(Delivery::class);
+    }
+    public function locations(){
+        return $this->hasMany(Location::class);
+    }
 }

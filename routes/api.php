@@ -1,29 +1,32 @@
 <?php
 
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Client\OrderController;
-use App\Http\Controllers\Client\OverviewController;
-use App\Http\Controllers\Client\ProfileController;
-use App\Http\Controllers\Employee\OrderController as EmployeeOrderController;
-use App\Http\Controllers\Employee\TransactionController;
-use App\Http\Controllers\LandingPageController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SupplyController;
-use App\Http\Controllers\UserController;
 use App\Models\Product;
-use App\Models\Transaction;
-use Database\Factories\ProductFactory;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\File;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
+use GuzzleHttp\Psr7\Response;
 use PhpParser\Node\Expr\FuncCall;
+use Illuminate\Support\Facades\Route;
+use Database\Factories\ProductFactory;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\SupplyController;
+use App\Http\Controllers\ProductController;
+use Illuminate\Http\Response as HttpResponse;
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\Client\OrderController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\Rider\LocationController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Client\OverviewController;
+use App\Http\Controllers\Employee\TransactionController;
+use App\Http\Controllers\Employee\OrderController as EmployeeOrderController;
+use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
+use App\Http\Controllers\Employee\RiderController;
+use App\Http\Controllers\Rider\DeliveryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +39,7 @@ use PhpParser\Node\Expr\FuncCall;
 |
 */
 
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/landing_page', [LandingPageController::class, 'products']);
@@ -45,8 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
 
-        Route::prefix('dashboard')->group(function(){
-            Route::get('overview', [DashboardController::class,'overview']);
+        Route::prefix('dashboard')->group(function () {
+            Route::get('overview', [DashboardController::class, 'overview']);
         });
 
         Route::prefix('products')->group(function () {
@@ -68,7 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'index', 'update', 'destroy'
         ]);
 
-        Route::prefix('category')->group(function(){
+        Route::prefix('category')->group(function () {
             Route::post('/sizes', [CategoryController::class, 'sizes']);
             Route::post('/levels', [CategoryController::class, 'levels']);
         });
@@ -91,7 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         Route::prefix('overview')->group(function () {
-            Route::get('/',[OverviewController::class, 'index']);
+            Route::get('/', [OverviewController::class, 'index']);
         });
 
         Route::resource('transaction', TransactionController::class)->only([
@@ -104,5 +108,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('orders', EmployeeOrderController::class)->only([
             'index', 'show'
         ]);
+
+        Route::prefix('rider')->group(function () {
+            Route::get('', [RiderController::class, 'index']);
+        });
+    });
+
+    Route::middleware(['role:rider'])->prefix('rider')->group(function () {
+        Route::prefix('deliveries')->group(function(){
+            Route::get('', [DeliveryController::class, 'index']);
+        });
+        Route::post('/storeCurrentLocation', [LocationController::class, 'storeCurrentLocation']);
     });
 });

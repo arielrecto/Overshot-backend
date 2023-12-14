@@ -3,6 +3,7 @@
 
 namespace App\Actions\Transaction;
 
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Supply;
 use App\Models\Transaction;
@@ -10,12 +11,19 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Interface\TransactionInterface;
+use App\Models\Delivery;
 
 class StoreOrderAction  implements TransactionInterface
 {
 
     public function store(Request $request)
     {
+
+
+        $rider = User::find($request->riderId);
+
+
+
         $order = Order::find($request->order['id']);
         $user = Auth::user();
 
@@ -24,6 +32,13 @@ class StoreOrderAction  implements TransactionInterface
             'user_id' => $user->id,
             'order_id' => $order->id,
             'type' => 'online'
+        ]);
+
+
+        $delivery = Delivery::create([
+            'user_id' => $rider->id,
+            'transaction_id' => $transaction->id,
+            'location_id' => $order->location->id
         ]);
 
         foreach ($request->supplies as $_supply) {
