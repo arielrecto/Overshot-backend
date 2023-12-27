@@ -40,4 +40,13 @@ class Product extends Model
     public function customizes(){
         return $this->hasMany(Customize::class);
     }
+    public function promo(){
+        return $this->hasMany(PromoProduct::class)->with(['promo']);
+    }
+    public function ratings() {
+        return $this->hasMany(Rating::class);
+    }
+    public function averageRating(){
+        return $this->with('ratings', 'rate');
+    }
 }

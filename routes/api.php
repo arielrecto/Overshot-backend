@@ -18,14 +18,19 @@ use Illuminate\Http\Response as HttpResponse;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CMSController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Rider\LocationController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PromoController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Client\OverviewController;
 use App\Http\Controllers\Employee\TransactionController;
 use App\Http\Controllers\Employee\OrderController as EmployeeOrderController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\Employee\RiderController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\RateController;
 use App\Http\Controllers\Rider\DeliveryController;
 
 /*
@@ -43,6 +48,11 @@ use App\Http\Controllers\Rider\DeliveryController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/landing_page', [LandingPageController::class, 'products']);
+Route::post('/feedback', [FeedbackController::class, 'store']);
+Route::get('/carousel', [CMSController::class, 'carousel']);
+Route::get('/top_products', [CMSController::class, 'bestSeller']);
+Route::get('products/show/{product}', [LandingPageController::class, 'productShow']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -58,13 +68,21 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
 
+
+
         Route::resource('products', ProductController::class)->only([
             'store', 'update', 'destroy', 'index'
         ]);
+
+        Route::prefix('supplies')->group(function () {
+            Route::post('/stock/{supply}/add', [SupplyController::class, 'addStock']);
+        });
+
         Route::resource('supplies', SupplyController::class)->only([
             'index', 'store', 'update', 'destroy'
         ]);
         Route::post('/role', [RoleController::class, 'store']);
+
         Route::resource('employee', UserController::class)->only([
             'index', 'store', 'update', 'destroy'
         ]);
@@ -80,13 +98,32 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::resource('category', CategoryController::class)->only([
             'index', 'store', 'update', 'destroy'
         ]);
+        Route::resource('feedback', FeedbackController::class)->except(['store']);
+
+        Route::resource('promo', PromoController::class)->except(['create', 'edit']);
+
+        Route::prefix('report')->group(function(){
+            Route::get('transaction', [ReportController::class, 'transaction']);
+            Route::get('sales', [ReportController::class, 'sales']);
+        });
+
+        Route::prefix('cms')->group(function(){
+            Route::post('/upload/image', [CMSController::class, 'addImage']);
+            Route::get('/gallery', [CMSController::class, 'gallery']);
+            Route::post('/upload/carousel', [CMSController::class, 'addCarousel']);
+            Route::post('/carousel/{carousel}/archive', [CMSController::class, 'archiveCarousel']);
+        });
     });
     Route::middleware(['role:client'])->prefix('client')->group(function () {
         Route::get('/products', [ProductController::class, 'index']);
-        Route::resource('/orders', OrderController::class)->only(['index', 'store']);
+        Route::get('/products/{product}/show', [ProductController::class, 'show']);
+        Route::resource('/orders', OrderController::class)->only(['index', 'store', 'show']);
         Route::resource('profile', ProfileController::class)->only([
             'store', 'update', 'destroy', 'show'
         ]);
+        Route::prefix('rate')->group(function(){
+            Route::post('/product/{product}/rate', [RateController::class, 'product']);
+        });
     });
     Route::middleware(['role:employee'])->prefix('employee')->group(function () {
 

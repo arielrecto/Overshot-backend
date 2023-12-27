@@ -1,17 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers;
 
-use App\Actions\Order\StoreOrderAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Client\StoreOrderRequest;
-use App\Models\Order;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use League\CommonMark\Node\Query\OrExpr;
 
-class OrderController extends Controller
+class FeedbackController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,14 +14,10 @@ class OrderController extends Controller
      */
     public function index()
     {
-
-        $user = Auth::user();
-        $orders = Order::with('payment', 'products.image', 'user')->where('user_id', $user->id)->get();
+        $feedbacks = Feedback::paginate(10);
 
 
-        return response([
-            'orders' => $orders
-        ]);
+        return response(['feedbacks' => $feedbacks], 200);
     }
 
     /**
@@ -46,12 +36,20 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, StoreOrderAction $storeOrderAction)
+    public function store(Request $request)
     {
+        $request->validate([
+            'email' => 'required',
+            'message' => 'required'
+        ]);
 
-        $order = $storeOrderAction->handle($request);
 
-        return Response($order, 200);
+        Feedback::create([
+            'email' => $request->email,
+            'message' => $request->message
+        ]);
+
+        return response(['message' => 'feedback sent success'], 200);
     }
 
     /**
@@ -62,12 +60,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = Order::with(['products' => function($q){
-            $q->with(['image', 'customizes'])->withAvg('ratings', 'rate');
-        }, 'transaction', 'location'])->where('id', $id)->first();
-
-
-        return response($order, 200);
+        //
     }
 
     /**

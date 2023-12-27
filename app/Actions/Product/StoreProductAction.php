@@ -40,12 +40,11 @@ class StoreProductAction
             $level = Level::where('name', $_level['name'])->first();
             $product->levels()->attach($level->id, ['percent' => $_level['percent']]);
         }
-        $image = $request->image;
 
         $image = $request->image;  // your base64 encoded
         $image = str_replace('data:image/png;base64,', '', $image);
         $image = str_replace(' ', '+', $image);
-        $imageName =  'Img' . now() .'.'.'png';
+        $imageName =  'img' . now() .'.'.'png';
         $filename = preg_replace('~[\\\\\s+/:*?"<>|+-]~', '-', $imageName);
 
         $imageDecoded = base64_decode($image);

@@ -21,6 +21,7 @@ class DashboardController extends Controller
         $transaction = Transaction::with('order.payment')->get();
 
         $data = [
+            'monthlyTransaction' => $this->monthlyTransaction(now()->year),
             'total' => [
                 'users' => $this->getTotalOfModel($totalUser),
                 'supplies' => $this->getTotalOfModel($totalSupply),
@@ -38,5 +39,24 @@ class DashboardController extends Controller
 
 
         return $count;
+    }
+    private function monthlyTransaction($year){
+
+        $monthlyTotal = [];
+
+
+        for ($month = 1; $month <= 12; $month++){
+
+            $totalTransaction = Transaction::whereMonth('created_at', $month)
+                                ->whereYear('created_at', $year)
+                                ->count();
+
+            $fullBNameOfMonth = date('F', strtotime("{$year}-{$month}-1"));
+
+            $monthlyTotal[$fullBNameOfMonth] = $totalTransaction;
+        }
+
+
+        return $monthlyTotal;
     }
 }

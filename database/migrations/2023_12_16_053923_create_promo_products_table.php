@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\Order;
+use App\Models\Product;
+use App\Models\Promo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,12 +15,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('promo_products', function (Blueprint $table) {
             $table->id();
-            $table->string('amount');
-            $table->string('type');
-            $table->string('status')->nullable();
-            $table->foreignIdFor(Order::class);
+            $table->foreignIdFor(Promo::class);
+            $table->foreignIdFor(Product::class);
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists('promo_products');
     }
 };

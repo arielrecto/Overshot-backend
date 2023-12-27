@@ -25,13 +25,16 @@ class Order extends Model
     public function products(){
         return $this->belongsToMany(Product::class)->withPivot('quantity', 'size');
     }
-    public function transactions(){
-        return $this->hasMany(Transaction::class);
+    public function transaction(){
+        return $this->hasOne(Transaction::class);
     }
     public function payment () {
         return $this->hasOne(Payment::class);
     }
     public function location(){
         return $this->belongsTo(Location::class);
+    }
+    public function ratings(){
+        return $this->hasMany(Rating::class);
     }
 }

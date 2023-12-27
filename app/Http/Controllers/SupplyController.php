@@ -88,4 +88,22 @@ class SupplyController extends Controller
     {
         return $deleteSupplyAction->handle($id);
     }
+
+    public function addStock (Request $request, string $id){
+
+        $request->validate(['quantity' => 'required']);
+
+        $supply = Supply::find($id);
+
+
+
+        $supply->update(['quantity' => $supply->quantity + $request->quantity]);
+
+        $supplies = Supply::get();
+
+
+
+        return response(['message' => 'stock quantity is Added', 'supplies' => $supplies]);
+
+    }
 }

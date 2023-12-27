@@ -2,6 +2,8 @@
 
 namespace App\Actions\Order;
 
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentStatusAndType;
 use App\Models\Category;
 use App\Models\Location;
 use App\Models\User;
@@ -23,7 +25,10 @@ class StoreOrderAction
 
         $user = Auth::user();
 
+
         $addressData = $request->addressData ?? null;
+
+
 
 
         $order = Order::create([
@@ -36,7 +41,40 @@ class StoreOrderAction
         ]);
 
 
-        if($addressData !== null){
+        $payment = Payment::create([
+            'amount' => $request->total,
+            'type' => $request->payment['type'],
+            'status' => 'Gcash' == $request->payment['type'] ? 'Paid' : 'Unpaid',
+            'order_id' => $order->id
+        ]);
+
+        if ($request->payment['type'] !== 'COD') {
+
+            $image = $request->payment['image'];  // your base64 encoded
+
+
+            $_image = preg_replace('#^data:image/\w+;base64,#i', '', $image);
+            $_image = str_replace('data:image/png;base64,', '', $image);
+            $fileContent = file_get_contents($image);
+            $_image = str_replace(' ', '+', $image);
+            $_image = preg_replace('#data:image/[^;]+;base64,#', '', strval($image));
+            $imageName =  'Img' . now() . '.' . 'png';
+            $filename = preg_replace('~[\\\\\s+/:*?"<>|+-]~', '-', $imageName);
+
+
+
+            $imageDecoded = base64_decode($_image);
+
+            PaymentImage::create([
+                'name' => $imageName,
+                'url' => asset('storage/payment/image/' . $filename),
+                'payment_id' => $payment->id
+            ]);
+            Storage::disk('public')->put('payment/image/' . $filename, $imageDecoded);
+        }
+
+
+        if ($addressData !== null) {
             $location = Location::create([
                 'latitude' => $addressData['lat'],
                 'longitude' => $addressData['lng'],
@@ -54,37 +92,10 @@ class StoreOrderAction
         foreach ($request->products as $_product) {
             $size = $_product['size'] === 'regular' ? 'regular' : $_product['size']['name'];
 
-           $order->products()->attach($_product['id'], ['quantity' => $_product['pieces'], 'size' => $size]);
+            $order->products()->attach($_product['id'], ['quantity' => $_product['pieces'], 'size' => $size]);
         }
 
-        $payment = Payment::create([
-            'amount' => $request->total,
-            'type' => $request->payment['type'],
-            'order_id' => $order->id
-        ]);
 
-
-        $image = $request->payment['image'];  // your base64 encoded
-
-
-        $_image = preg_replace('#^data:image/\w+;base64,#i', '', $image);
-        $_image = str_replace('data:image/png;base64,', '', $image);
-        $fileContent = file_get_contents($image);
-        $_image = str_replace(' ', '+', $image);
-        $_image = preg_replace('#data:image/[^;]+;base64,#', '', strval($image));
-        $imageName =  'Img' . now() . '.' . 'png';
-        $filename = preg_replace('~[\\\\\s+/:*?"<>|+-]~', '-', $imageName);
-
-
-
-        $imageDecoded = base64_decode($_image);
-
-        PaymentImage::create([
-            'name' => $imageName,
-            'url' => asset('storage/payment/image/' . $filename),
-            'payment_id' => $payment->id
-        ]);
-        Storage::disk('public')->put('payment/image/' . $filename, $imageDecoded);
 
         $orders = $user->orders()->get();
         return [

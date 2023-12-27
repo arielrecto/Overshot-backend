@@ -13,12 +13,24 @@ class LandingPageController extends Controller
 
         $categories = Category::get();
 
-        $products = Product::with('categories', 'image')->get();
+        $products = Product::with(['categories', 'image', 'ratings' , 'promo.promo' => function($q){
+            $q->where('is_active', true);
+        }])->withAvg('ratings', 'rate')->get();
 
 
         return response([
             'categories' => $categories,
             'products' => $products
         ]);
+    }
+    public function productShow($id){
+
+        $product = Product::where('id', $id)->with(['image', 'ratings','categories', 'promo' => function($q){
+            $q->where('is_active', true)->get();
+        }])->withAvg('ratings', 'rate')->first();
+
+
+        return response($product, 200);
+
     }
 }
