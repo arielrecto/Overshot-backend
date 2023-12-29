@@ -2,11 +2,12 @@
 
 namespace App\Actions\Profile;
 
-use App\Actions\ImageUploader;
 use App\Models\Avatar;
 use App\Models\Profile;
 use Illuminate\Http\Request;
+use App\Actions\ImageUploader;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class StoreProfileAction
 {
@@ -29,13 +30,17 @@ class StoreProfileAction
             'user_id' => Auth::user()->id
         ]);
 
-        if ($request->hasFile('avatar')) {
-            $uploader = new ImageUploader();
-            $image = $request->file('avatar');
-            $name = 'Img' . now() . '.' . $image->getClientOriginalExtension();
-            $filename = preg_replace('~[\\\\\s+/:*?"<>|+-]~', '-', $name);
-            $destination = 'public/avatar';
-            $uploader->upload($image, $destination, $filename);
+        if ($request->image !== null) {
+
+            $image = $request->image;  // your base64 encoded
+            $image = str_replace('data:image/jpeg;base64,', '', $image);
+            $image = str_replace(' ', '+', $image);
+            $imageName =  'prfl' . now() . '.' . 'png';
+            $filename = preg_replace('~[\\\\\s+/:*?"<>|+-]~', '-', $imageName);
+
+            $imageDecoded = base64_decode($image);
+
+            Storage::disk('public')->put('avatar/' . $filename, $imageDecoded);
 
             Avatar::create([
                 'name' => $filename,

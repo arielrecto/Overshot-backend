@@ -43,9 +43,12 @@ class ProfileController extends Controller
      */
     public function store(StoreProfileRequest $request, StoreProfileAction $storeProfileAction)
     {
-        $storeProfileAction->handle($request);
 
-        return response('Profile Added Successfully', 200);
+        $profile = $storeProfileAction->handle($request);
+
+        $profile = Profile::where('id', $profile->id)->with(['user', 'avatar'])->first();
+
+        return response(['message' => 'profile added success', 'profile' => $profile], 200);
     }
 
     /**
@@ -59,9 +62,9 @@ class ProfileController extends Controller
 
         $user = User::find($id);
 
-        $profile = $user->profile;
+        $profile = Profile::where('user_id', $user->id)->with(['user', 'avatar'])->first();
         return response([
-           'user' => $user
+           'profile' => $profile
         ], 200);
     }
 

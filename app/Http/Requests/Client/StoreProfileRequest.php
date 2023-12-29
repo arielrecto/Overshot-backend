@@ -33,7 +33,8 @@ class StoreProfileRequest extends FormRequest
             'municipality' => 'required',
             'region' => 'required',
             'zip_code' => 'required',
-            'phone_no' =>'required'
+            'phone_no' =>'required',
+            'image' => 'required|sometimes|base64mimes:jpeg,jpg,png'
         ];
     }
 }
