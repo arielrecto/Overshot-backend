@@ -32,4 +32,9 @@ class Transaction extends Model
     public function transaction(){
         return $this->hasOne(Transaction::class);
     }
+    public function delivery(){
+
+        return $this->hasOne(Delivery::class)->with(['riderLocation']);
+
+    }
 }

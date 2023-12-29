@@ -117,6 +117,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['role:client'])->prefix('client')->group(function () {
         Route::get('/products', [ProductController::class, 'index']);
         Route::get('/products/{product}/show', [ProductController::class, 'show']);
+        Route::prefix('/orders')->group(function(){
+            Route::get('/rider/location/{location}', [DeliveryController::class, 'riderLocation']);
+        });
         Route::resource('/orders', OrderController::class)->only(['index', 'store', 'show']);
         Route::resource('profile', ProfileController::class)->only([
             'store', 'update', 'destroy', 'show'
@@ -154,6 +157,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['role:rider'])->prefix('rider')->group(function () {
         Route::prefix('deliveries')->group(function(){
             Route::get('', [DeliveryController::class, 'index']);
+            Route::post('/accept/delivery/{delivery}', [DeliveryController::class, 'acceptDelivery']);
+            Route::post('/rider/location/{location}/update', [DeliveryController::class, 'updateLocation']);
+            Route::post('/cod/delivery/{delivery}/complete', [DeliveryController::class, 'completeCOD']);
+            Route::post('/delivery/{delivery}/complete', [DeliveryController::class, 'completeDelivery']);
         });
         Route::post('/storeCurrentLocation', [LocationController::class, 'storeCurrentLocation']);
     });

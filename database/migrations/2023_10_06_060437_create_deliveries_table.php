@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\DeliveryStatus;
 use App\Models\Location;
 use App\Models\Transaction;
 use App\Models\User;
@@ -21,6 +22,8 @@ return new class extends Migration
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Transaction::class);
             $table->foreignIdFor(Location::class);
+            $table->foreignIdFor(Location::class, 'rider_location_id')->nullable();
+            $table->string('status')->default(DeliveryStatus::PENDING->value);
             $table->timestamps();
         });
     }

@@ -64,7 +64,7 @@ class OrderController extends Controller
     {
         $order = Order::with(['products' => function($q){
             $q->with(['image', 'customizes'])->withAvg('ratings', 'rate');
-        }, 'transaction', 'location'])->where('id', $id)->first();
+        }, 'transaction.delivery', 'location'])->where('id', $id)->first();
 
 
         return response($order, 200);

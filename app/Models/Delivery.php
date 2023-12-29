@@ -12,7 +12,9 @@ class Delivery extends Model
     protected $fillable = [
         'user_id',
         'transaction_id',
-        'location_id'
+        'location_id',
+        'rider_location_id',
+        'status'
     ];
 
     public function User () {
@@ -23,5 +25,10 @@ class Delivery extends Model
     }
     public function location (){
         return $this->belongsTo(Location::class);
+    }
+    public function riderLocation(){
+
+        return $this->belongsTo(Location::class, 'rider_location_id')->with(['user']);
+
     }
 }
