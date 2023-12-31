@@ -150,36 +150,25 @@ class ProductController extends Controller
 
         $allMonths = range(1, 12);
 
-        $productsWithHighestOrders = Product::with(['orders' => function ($query) {
-            $query->select(
-                'product_id',
-                DB::raw('COUNT(*) as order_count'),
-                DB::raw("strftime('%m', created_at) as month")
-            )
-            ->groupBy('product_id', DB::raw("strftime('%m', created_at)"))
-            ->orderByDesc('order_count')
-            ->limit(1); // Retrieve only the highest order for each month
-        }])
-        ->get();
         $data = [];
+
+
 
         foreach ($allMonths as $month) {
             $monthName = date("F", mktime(0, 0, 0, $month, 1)); // Get month name
 
-            foreach ($productsWithHighestOrders as $product) {
-                $productName = $product->name;
+            $productWithHighestOrderQuantity = Product::withCount(['orders' => function ($query) use ($month) {
+                $query->select(DB::raw('coalesce(sum(op.quantity), 0) as total_quantity'))
+                    ->join('order_product as op', 'orders.id', '=', 'op.order_id')
+                    ->where('products.id', '=', DB::raw('op.product_id'))
+                    ->whereMonth('orders.created_at', $month) // Filter by month
+                    ->groupBy('op.product_id');
+            }])
+            ->orderByDesc('orders_count')
+            ->first();
 
-                $orderData = $product->orders->first(function ($item) use ($month) {
-                    return $item->month == $month;
-                });
-
-                $highestOrderCount = $orderData ? $orderData->order_count : 0;
-
-                // Organize the data into an array with month names as the default array key
-                $data[$monthName] = $highestOrderCount;
-            }
+            $data[$monthName] = $productWithHighestOrderQuantity ?? 0;
         }
-
 
         return $data;
 

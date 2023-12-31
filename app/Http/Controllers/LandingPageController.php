@@ -25,8 +25,8 @@ class LandingPageController extends Controller
     }
     public function productShow($id){
 
-        $product = Product::where('id', $id)->with(['image', 'ratings','categories', 'promo' => function($q){
-            $q->where('is_active', true)->get();
+        $product = Product::where('id', $id)->with(['image', 'ratings','categories', 'promo.promo' => function($q){
+            $q->where('is_active', true);
         }])->withAvg('ratings', 'rate')->first();
 
 
