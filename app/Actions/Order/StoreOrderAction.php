@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentImage;
 use App\Models\Product;
+use App\Notifications\OrderStatus;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Response;
@@ -24,6 +25,8 @@ class StoreOrderAction
     {
 
         $user = Auth::user();
+
+        $customer = User::find($user->id);
 
 
         $addressData = $request->addressData ?? null;
@@ -39,6 +42,16 @@ class StoreOrderAction
             'type' => 'online',
             'status' => 'pending'
         ]);
+
+
+        $orderStatusMessage = [
+            'order_id' => $order->order_num,
+            'status' => $order->status,
+            'message' => "Your order will be process by our employee"
+        ];
+
+
+        $customer->notify(new OrderStatus($orderStatusMessage));
 
 
         $payment = Payment::create([

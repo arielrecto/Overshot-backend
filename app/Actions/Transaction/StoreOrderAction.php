@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Interface\TransactionInterface;
 use App\Models\Delivery;
+use App\Notifications\OrderStatus;
 
 class StoreOrderAction  implements TransactionInterface
 {
@@ -26,6 +27,12 @@ class StoreOrderAction  implements TransactionInterface
 
         $order = Order::find($request->order['id']);
         $user = Auth::user();
+
+
+        $customer = User::find($order->user->id);
+
+
+
 
         $transaction = Transaction::create([
             'ref' => 'TRNS_' . $order->id . Str::slug($order->created_at),
@@ -51,6 +58,16 @@ class StoreOrderAction  implements TransactionInterface
         $order->update([
             'status' => 'processed'
         ]);
+
+
+        $orderStatusMessage = [
+            'order_id' => $order->order_num,
+            'status' => $order->status,
+            'message' => "Your order now is processed and ready to delivery"
+        ];
+
+        $customer->notify(new OrderStatus($orderStatusMessage));
+
 
         $orders = Order::where('status', 'pending')->with('user', 'payment', 'products')->get();
 

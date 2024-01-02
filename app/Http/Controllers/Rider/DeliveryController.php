@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Rider;
 
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Delivery;
@@ -9,6 +10,7 @@ use App\Models\Location;
 use App\Models\PaymentImage;
 use Illuminate\Http\Request;
 use App\Enums\DeliveryStatus;
+use App\Notifications\OrderStatus;
 use App\Enums\PaymentStatusAndType;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -58,6 +60,21 @@ class DeliveryController extends Controller
             'status' => DeliveryStatus::ON_DELIVER->value
         ]);
 
+
+        $customer = User::find($order->user->id);
+
+        $orderStatusMessage = [
+            'order_id' => $order->order_num,
+            'status' => $order->status,
+            'message' => "Your order is on delivery"
+        ];
+
+
+        $customer->notify(new OrderStatus($orderStatusMessage));
+
+
+
+
         $deliveries = $this->delivery->where('user_id', $user->id)->with(['transaction.order.payment', 'location'])->get();
 
         return response(['message' => 'Delivery Accepted', 'deliveries' => $deliveries], 200);
@@ -80,12 +97,9 @@ class DeliveryController extends Controller
     public function completeCOD (string $id, Request $request) {
 
 
-
         $request->validate([
             'image' => 'required|sometimes|base64mimes:jpg,png,jpeg'
         ]);
-
-
 
 
         $delivery = Delivery::find($id);
@@ -122,6 +136,22 @@ class DeliveryController extends Controller
         $order->update([
             'status' => 'done'
         ]);
+
+
+        $owner = User::role('admin')->first();
+        $employee = User::find($order->transaction->user->id);
+
+
+        $orderStatusMessage = [
+            'order_id' => $order->order_num,
+            'status' => $order->status,
+            'message' => "Your order is on Done"
+        ];
+
+
+        $owner->notify(new OrderStatus($orderStatusMessage));
+
+        $employee->notify(new OrderStatus($orderStatusMessage));
 
 
         return response([
