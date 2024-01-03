@@ -75,6 +75,12 @@ class ProductController extends Controller
      */
     public function store(Request $request, StoreProductAction $storeProductAction)
     {
+
+        $request->validate([
+            'image' => 'required|sometimes|base64mimes:png'
+        ]);
+
+
         $product =  $storeProductAction->handle($request);
 
         if (!$product) {

@@ -18,6 +18,7 @@ class StoreProductAction
 {
     public function handle(Request $request)
     {
+
         $product = Product::create([
             'name' => $request->data['name'],
             'price' => $request->data['price'],
