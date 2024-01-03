@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignIdFor(Product::class);
             $table->foreignIdFor(Order::class);
             $table->string('sugar_level');
-            $table->string('addons');
+            $table->longText('addons');
             $table->timestamps();
         });
     }
