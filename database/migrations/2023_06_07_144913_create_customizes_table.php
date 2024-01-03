@@ -1,10 +1,11 @@
 <?php
 
-use App\Models\Product;
 use App\Models\User;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -19,7 +20,9 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Product::class);
+            $table->foreignIdFor(Order::class);
             $table->string('sugar_level');
+            $table->string('addons');
             $table->timestamps();
         });
     }

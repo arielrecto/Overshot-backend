@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Client;
 use App\Actions\Order\StoreOrderAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\StoreOrderRequest;
+use App\Models\Customize;
 use App\Models\Order;
+use App\Models\Product;
+use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +52,8 @@ class OrderController extends Controller
     public function store(Request $request, StoreOrderAction $storeOrderAction)
     {
 
+
+
         $order = $storeOrderAction->handle($request);
 
         return Response($order, 200);
@@ -62,8 +67,10 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = Order::with(['products' => function($q){
-            $q->with(['image', 'customizes'])->withAvg('ratings', 'rate');
+        $order = Order::with(['products' => function($q) use ($id){
+            $q->with(['image', 'customizes' => function ($query) use ($id) {
+                $query->where('order_id', $id);
+            }])->withAvg('ratings', 'rate');
         }, 'transaction.delivery', 'location'])->where('id', $id)->first();
 
 

@@ -12,7 +12,9 @@ class Customize extends Model
     protected $fillable = [
         'user_id',
         'product_id',
-        'sugar_level'
+        'sugar_level',
+        'addons',
+        'order_id',
     ];
 
 

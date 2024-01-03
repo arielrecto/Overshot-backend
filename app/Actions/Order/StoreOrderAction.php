@@ -5,6 +5,7 @@ namespace App\Actions\Order;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentStatusAndType;
 use App\Models\Category;
+use App\Models\Customize;
 use App\Models\Location;
 use App\Models\User;
 use App\Models\Order;
@@ -17,6 +18,7 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Mockery\Undefined;
 
 class StoreOrderAction
 {
@@ -34,6 +36,8 @@ class StoreOrderAction
 
 
 
+
+
         $order = Order::create([
             'order_num' => 'ORDR_' . Str::slug(now()),
             'quantity' => $request->quantity,
@@ -42,6 +46,26 @@ class StoreOrderAction
             'type' => 'online',
             'status' => 'pending'
         ]);
+
+        foreach ($request->products as $product) {
+
+            $keyExist = array_key_exists('customize', $product);
+            if ($keyExist) {
+                $data = $product['customize']['data'];
+
+                $productData = Product::find($product['id']);
+
+                Customize::create([
+                    'user_id' => $user->id,
+                    'product_id' => $productData->id,
+                    'sugar_level' => $data['level'],
+                    'order_id' => 1,
+                    'addons' => json_encode($data['addons'])
+                ]);
+            }
+
+
+        }
 
 
         $orderStatusMessage = [
@@ -103,7 +127,8 @@ class StoreOrderAction
 
 
         foreach ($request->products as $_product) {
-            $size = $_product['size'] === 'regular' ? 'regular' : $_product['size']['name'];
+            $size = $_product['size'] === 'regular' ? 'regular' : $_product['size'];
+
 
             $order->products()->attach($_product['id'], ['quantity' => $_product['pieces'], 'size' => $size]);
         }
