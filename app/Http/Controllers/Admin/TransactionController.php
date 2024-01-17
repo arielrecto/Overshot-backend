@@ -92,7 +92,7 @@ class TransactionController extends Controller
     }
     private function getTransactionDataByType (Transaction $transaction, $type){
 
-       $_transaction =  $transaction->where('type', $type)->with('user', 'order', 'supplies')->get();
+       $_transaction =  $transaction->where('type', $type)->with('user', 'order', 'supplies')->latest()->get();
 
        return $_transaction;
     }
