@@ -14,7 +14,9 @@ class StoreSupplyAction {
                 'quantity' => $supply['quantity'],
                 'amount' => $supply['amount'],
                 'unit' => $supply['unit'],
-                'category'=> $supply['category']
+                'category'=> $supply['category'],
+                'expiry_date' => $supply['expiry_date'],
+                'manufacturer' => $supply['manufacturer']
             ]);
         }
     }

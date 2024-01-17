@@ -39,6 +39,7 @@ class SupplyController extends Controller
      */
     public function store(Request $request, StoreSupplyAction $action)
     {
+
         $action->handle($request);
 
         return response('item-added Successfully', 200);
@@ -89,21 +90,30 @@ class SupplyController extends Controller
         return $deleteSupplyAction->handle($id);
     }
 
-    public function addStock (Request $request, string $id){
+    public function addStock(Request $request, string $id)
+    {
 
-        $request->validate(['quantity' => 'required']);
+        $request->validate([
+            'quantity' => 'required',
+            'manufacturer'=> 'required',
+            'expiry_date' => 'required'
+        ]);
 
         $supply = Supply::find($id);
 
 
 
-        $supply->update(['quantity' => $supply->quantity + $request->quantity]);
+        $supply->update([
+            'quantity' => $supply->quantity + $request->quantity,
+            'manufacturer' => $request->manufacturer,
+            'expiry_date' => $request->expiry_date
+        ]);
+
 
         $supplies = Supply::get();
 
 
 
         return response(['message' => 'stock quantity is Added', 'supplies' => $supplies]);
-
     }
 }

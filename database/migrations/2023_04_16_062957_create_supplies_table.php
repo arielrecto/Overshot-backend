@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('unit');
             $table->string('quantity');
             $table->string('category');
+            $table->string('expiry_date');
+            $table->string('manufacturer');
             $table->timestamps();
         });
     }

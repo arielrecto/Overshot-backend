@@ -13,7 +13,9 @@ class Supply extends Model
         'quantity',
         'amount',
         'unit',
-        'category'
+        'category',
+        'expiry_date',
+        'manufacturer'
     ];
 
     public function transactions()
