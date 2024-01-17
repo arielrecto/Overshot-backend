@@ -13,16 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('supplies', function (Blueprint $table) {
+        Schema::create('daily_supplies', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('amount');
-            $table->string('unit');
-            $table->string('quantity');
-            $table->string('category');
-            $table->string('expiry_date');
-            $table->string('manufacturer');
-            $table->string('price')->nullable();
+            $table->json('supplies');
             $table->timestamps();
         });
     }
@@ -34,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('supplies');
+        Schema::dropIfExists('daily_supplies');
     }
 };
