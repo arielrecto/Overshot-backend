@@ -14,7 +14,7 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        $feedbacks = Feedback::paginate(10);
+        $feedbacks = Feedback::latest()->paginate(10);
 
 
         return response(['feedbacks' => $feedbacks], 200);
