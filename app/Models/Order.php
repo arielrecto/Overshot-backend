@@ -11,12 +11,11 @@ class Order extends Model
 
     protected $fillable = [
         'order_num',
-        'quantity',
-        'total',
         'user_id',
         'type',
         'status',
-        'location_id'
+        'location_id',
+        'cart_id'
     ];
 
     public function user(){
@@ -36,5 +35,8 @@ class Order extends Model
     }
     public function ratings(){
         return $this->hasMany(Rating::class);
+    }
+    public function cart(){
+        return $this->belongsTo(Cart::class);
     }
 }

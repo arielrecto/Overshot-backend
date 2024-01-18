@@ -17,7 +17,18 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::where('status', 'pending')->with('user', 'products', 'payment', 'location')->get();
+        $orders = Order::where('status', 'pending')->with([
+            'user',
+            'cart' => function($cart){
+                $cart->with(['cartProducts' => function($c_product){
+                    $c_product->with([
+                        'product.image',
+                    ]);
+                }]);
+            },
+            'payment',
+            'location'
+            ])->latest()->get();
         $supplies = Supply::get();
         return response([
             'orders' => $orders,

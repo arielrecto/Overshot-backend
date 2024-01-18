@@ -14,7 +14,7 @@ class OverviewController extends Controller
 
     public function index () {
         $user = Auth::user();
-        $transaction = Transaction::with('order')->where('user_id', $user->id)->get();
+        $transaction = Transaction::with(['order.cart'])->where('user_id', $user->id)->get();
         $orders = Order::where('status', 'pending')->get();
 
         return response([

@@ -28,6 +28,7 @@ use App\Http\Controllers\Client\OverviewController;
 use App\Http\Controllers\Employee\TransactionController;
 use App\Http\Controllers\Employee\OrderController as EmployeeOrderController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Employee\DailySupplyController;
 use App\Http\Controllers\Employee\RiderController;
 use App\Http\Controllers\FeedbackController;
@@ -120,6 +121,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/products/{product}/show', [ProductController::class, 'show']);
         Route::prefix('/orders')->group(function(){
             Route::get('/rider/location/{location}', [DeliveryController::class, 'riderLocation']);
+        });
+        Route::prefix('/cart')->group(function(){
+            Route::post('/addtocart', [CartController::class, 'add']);
+            Route::get('/', [CartController::class, 'index']);
         });
         Route::resource('/orders', OrderController::class)->only(['index', 'store', 'show']);
         Route::resource('profile', ProfileController::class)->only([

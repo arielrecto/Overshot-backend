@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Actions\Order\StoreOrderAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Client\StoreOrderRequest;
-use App\Models\Customize;
-use App\Models\Order;
-use App\Models\Product;
+use App\Models\Cart;
 use App\Models\Size;
+use App\Models\User;
+use App\Models\Order;
+use App\Models\Payment;
+use App\Models\Product;
+use App\Models\Location;
+use App\Models\Customize;
+use Illuminate\Support\Str;
+use App\Models\PaymentImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Notifications\OrderStatus;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Actions\Order\StoreOrderAction;
+use Illuminate\Support\Facades\Storage;
 use League\CommonMark\Node\Query\OrExpr;
+use App\Http\Requests\Client\StoreOrderRequest;
 
 class OrderController extends Controller
 {
@@ -25,7 +33,13 @@ class OrderController extends Controller
     {
 
         $user = Auth::user();
-        $orders = Order::with('payment', 'products.image', 'user')->where('user_id', $user->id)->get();
+        $orders = Order::with(['payment', 'user', 'cart' => function($cart) {
+            $cart->with([
+                'cartProducts' => function($c_product){
+                    $c_product->with('product.image');
+                }
+            ]);
+        }])->where('user_id', $user->id)->latest()->get();
 
 
         return response([
@@ -52,11 +66,80 @@ class OrderController extends Controller
     public function store(Request $request, StoreOrderAction $storeOrderAction)
     {
 
+        $user = Auth::user();
+
+        $customer = User::find($user->id);
+        $cart = Cart::find($request->id);
+
+        $order = Order::create([
+            'order_num' => 'ORDR_' . Str::slug(now()),
+            'quantity' => $request->quantity,
+            'total' => $request->total,
+            'user_id' => $user->id,
+            'type' => 'online',
+            'status' => 'pending',
+            'cart_id' => $cart->id
+        ]);
+
+        $location = Location::create([
+            'latitude' => $request->location['lat'],
+            'longitude' => $request->location['lng'],
+            'address' => $request->location['address'],
+            'user_id' => $user->id,
+        ]);
+
+        $order->update([
+            'location_id' => $location->id
+        ]);
+
+        $payment = Payment::create([
+            'amount' => $request->total,
+            'type' => $request->payment['type'],
+            'status' => 'Gcash' == $request->payment['type'] ? 'Paid' : 'Unpaid',
+            'order_id' => $order->id
+        ]);
 
 
-        $order = $storeOrderAction->handle($request);
 
-        return Response($order, 200);
+        if ($request->payment['type'] !== 'COD') {
+
+            $image = $request->payment['image'];  // your base64 encoded
+
+
+            $_image = preg_replace('#^data:image/\w+;base64,#i', '', $image);
+            $_image = str_replace('data:image/png;base64,', '', $image);
+            $fileContent = file_get_contents($image);
+            $_image = str_replace(' ', '+', $image);
+            $_image = preg_replace('#data:image/[^;]+;base64,#', '', strval($image));
+            $imageName =  'Img' . now() . '.' . 'png';
+            $filename = preg_replace('~[\\\\\s+/:*?"<>|+-]~', '-', $imageName);
+
+
+
+            $imageDecoded = base64_decode($_image);
+
+            PaymentImage::create([
+                'name' => $imageName,
+                'url' => asset('storage/payment/image/' . $filename),
+                'payment_id' => $payment->id
+            ]);
+            Storage::disk('public')->put('payment/image/' . $filename, $imageDecoded);
+        }
+
+        $orderStatusMessage = [
+            'order_id' => $order->order_num,
+            'status' => $order->status,
+            'message' => "Your order will be process by our employee"
+        ];
+
+
+        $customer->notify(new OrderStatus($orderStatusMessage));
+
+        $cart->update([
+            'is_check_out' => true
+        ]);
+
+        return response(['message' => 'order Success'],200);
     }
 
     /**
@@ -67,13 +150,19 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = Order::with(['products' => function($q) use ($id){
-            $q->with(['image', 'customizes' => function ($query) use ($id) {
-                $query->where('order_id', $id);
-            }])->withAvg('ratings', 'rate');
-        }, 'transaction.delivery', 'location'])->where('id', $id)->first();
+        // $order = Order::with(['products' => function($q) use ($id){
+        //     $q->with(['image', 'customizes' => function ($query) use ($id) {
+        //         $query->where('order_id', $id);
+        //     }])->withAvg('ratings', 'rate');
+        // }, 'transaction.delivery', 'location'])->where('id', $id)->first();
 
-
+        $order = Order::with(['location', 'transaction.delivery' , 'cart' => function($cart){
+            $cart->with(['cartProducts' => function($c_product){
+                $c_product->with(['product' => function ($product) {
+                    $product->with(['image'])->withAvg('ratings', 'rate');
+                }]);
+            }]);
+        }])->whereId($id)->first();
         return response($order, 200);
     }
 

@@ -20,20 +20,41 @@ class DeliveryController extends Controller
 {
     public function __construct(public Delivery $delivery)
     {
-
     }
-    public function index(){
+    public function index()
+    {
 
 
         $user = Auth::user();
 
+        // $deliveries = $this->delivery->where('user_id', $user->id)
+        // ->where('status', '!=', DeliveryStatus::DONE->value)
+        // ->with(['transaction.order.payment', 'location'])->get();
+
         $deliveries = $this->delivery->where('user_id', $user->id)
-        ->where('status', '!=', DeliveryStatus::DONE->value)
-        ->with(['transaction.order.payment', 'location'])->get();
+            ->where('status', '!=', DeliveryStatus::DONE->value)
+            ->with([
+                'transaction' => function ($transaction) {
+                    $transaction->with([
+                        'order' => function ($order) {
+                            $order->with([
+                                'cart' => function ($cart) {
+                                    $cart->with([
+                                        'cartProducts' => function ($c_product) {
+                                            $c_product->with(['product.image']);
+                                        }
+                                    ]);
+                                },
+                                'payment'
+                            ]);
+                        }
+                    ]);
+                },'location'])->latest()->get();
 
         return response($deliveries, 200);
     }
-    public function acceptDelivery(Request $request, String $id){
+    public function acceptDelivery(Request $request, String $id)
+    {
 
         $user = Auth::user();
 
@@ -79,7 +100,8 @@ class DeliveryController extends Controller
 
         return response(['message' => 'Delivery Accepted', 'deliveries' => $deliveries], 200);
     }
-    public function updateLocation(string $id, Request $request) {
+    public function updateLocation(string $id, Request $request)
+    {
 
 
         $location = Location::find($id);
@@ -94,7 +116,8 @@ class DeliveryController extends Controller
         return response(['message' => 'location updated']);
     }
 
-    public function completeCOD (string $id, Request $request) {
+    public function completeCOD(string $id, Request $request)
+    {
 
 
         $request->validate([
@@ -159,7 +182,8 @@ class DeliveryController extends Controller
         ], 200);
     }
 
-    public function completeDelivery(string $id){
+    public function completeDelivery(string $id)
+    {
 
         $delivery = Delivery::find($id);
 
@@ -179,9 +203,9 @@ class DeliveryController extends Controller
         return response([
             'message' => 'Deliver Success'
         ], 200);
-
     }
-    public function riderLocation($id){
+    public function riderLocation($id)
+    {
 
         $location = Location::where('id', $id)->with(['user'])->first();
 

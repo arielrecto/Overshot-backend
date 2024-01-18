@@ -49,6 +49,9 @@ class Product extends Model
     public function averageRating(){
         return $this->with('ratings', 'rate');
     }
+    public function cartProduct(){
+        return $this->hasOne(CartProduct::class);
+    }
     public function getTotalSoldInMonth(string $month) {
         return $this->orders()->whereMonth('created_at', $month)->sum('quantity');
     }

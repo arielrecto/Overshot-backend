@@ -62,4 +62,7 @@ class User extends Authenticatable
     public function locations(){
         return $this->hasMany(Location::class);
     }
+    public function cart(){
+        return $this->hasMany(Cart::class);
+    }
 }
