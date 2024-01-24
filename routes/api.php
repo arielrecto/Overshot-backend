@@ -107,6 +107,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('report')->group(function(){
             Route::get('transaction', [ReportController::class, 'transaction']);
             Route::get('sales', [ReportController::class, 'sales']);
+            Route::get('order', [ReportController::class, 'order']);
         });
 
         Route::prefix('cms')->group(function(){
